@@ -19,5 +19,11 @@
   "bugs": {
     "url": "https://github.com/markwardle/fire-models/issues"
   },
-  "homepage": "https://github.com/markwardle/fire-models"
+  "homepage": "https://github.com/markwardle/fire-models",
+  "dependencies": {
+    "firebase": "^2.2.3"
+  },
+  "devDependencies": {
+    "gobble": "^0.7.14"
+  }
 }
