@@ -25,13 +25,24 @@ The Manager's constructor accepts a root firebase url and configuration object a
 
 ## Models
 
-  createModelProperty = (Model, key, def) ->
-    Model.prototype[key] = (value) ->
-      if value?
-        @set key, value
-      @get key
-
   FireModel.Model = class Model
+    constructor: () ->
+      throw "FireModel.Model is an abstract class and must be extended."
+
+This is a static method that aids in the creating of new model classes.  It creates a
+getter/setter method for the Model.  This method is a getter when it receives no argument
+and a setter when it does.  It works for data, relationships, and computed properties.
+
+For example if you have a `User` model with a `name` property, you can retrieve the value
+by calling `someUser.name()`, which is a shorter version of `someUser.get('name')`.
+Likewise, the name can be set with `someUser.name('Charlie Bucket')` which is the same
+as calling `someUser.set('name', 'Charlie Bucket')`.
+
+    @createModelProperty: (Model, key, def) ->
+      Model::[key] = (value) ->
+        if value?
+          @set key, value
+        @get key
 
 A model's data and relationships can be updated using the set method.  The set method also
 takes care of triggering event listeners for the property.
@@ -113,10 +124,11 @@ To reset a specific property, the key parameter should be the name of the proper
       else
         @reset k for k, val in @_changed
 
-Firebases base model is meant to be extended rather than used directly
+Firebases base model is meant to be extended rather than used directly.  The extend method should receive
+a definition object.
 
     extend: (definition) ->
-      Model = class NewClass
+      Model = class NewClass extends FireModel.Model
         constructor: (id) ->
           @_data = {}
           @_changed = {}
