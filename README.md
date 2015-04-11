@@ -23,24 +23,11 @@ Then create your models.
         key: 'uid',
         path: 'users',
         data: {
-            name: {
-                required: true
-                validate: FM.validate.string
-            },
-            email: {
-                required: true
-                validate: FM.validate.email
-            },
-            joinedAt: {
-                auto: FM.created.timestamp
-            },
-            updatedAt: {
-                auto: FM.every.timestamp
-            }
-        },
-        hasMany: {posts: 'Post'}
-        computed: {
-            drafts: Fm.computed()
+            'name': FM.string().required(), 
+            'email': FM.string().required(),
+            'joinedAt': FM.timestamp().autoOnCreate(),
+            'updatedAt': FM.timestamp().autoOnUpdate(),
+            'posts': FM.manyToOne('Post').inverse('author')
         }
     });
     
@@ -49,29 +36,14 @@ Then create your models.
         key: 'slug',
         path: 'posts',
         data: {
-            title: {
-                required: true
-                validate: FM.validate.string
-            },
-            content: {
-                default: ''
-                validate: FM.validate.string
-            },
-            joinedAt: {
-                auto: FM.created.timestamp
-            },
-            updatedAt: {
-                auto: FM.every.timestamp
-            },
-            publishedAt: {
-                default: 0,
-                validate: FM.validate.integer
-            }
-        },
-        hasOne: {author: 'User'},
-        computed: {
-            FM.computed(isPublished, ['publishedAt'], function(publishedAt){
-                return publishedAt != 0;
+            'title': FM.string().required(), 
+            'content': FM.string('').required(), 
+            'createdAt': FM.timestamp().autoOnCreate(), 
+            'updatedAt': FM.timestamp().autoOnUpdate(), 
+            'publishedAt': FM.timestamp(0),
+            'author': FM.oneToMany('User').inverse('posts'),
+            'isComputed': FM.computed(['publishedAt'], function(publishedAt){
+                 return !!publishedAt;
             })
         }
     })
@@ -130,7 +102,7 @@ Our data has been written to firebase as follows.
                 'email': 'me@mydomain.com',
                 'joinedAt': 123456677,
                 'updatedAt': 123456677,
-                'posts': {
+                '__posts__': {
                     'fern-hill': true
                 }
             }
@@ -139,7 +111,10 @@ Our data has been written to firebase as follows.
             'fern-hill': {
                 'title': 'Fern Hill',
                 'content': '...And honoured among wagons I was prince of the apple towns...',
-                'author': 'user:1'
+                '__author__': 'user:1',
+                'createdAt': 123456677,
+                'updatedAt': 123456678,
+                'publishedAt': 123456678
             }
         }
     }
