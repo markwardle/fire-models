@@ -20,9 +20,9 @@ Then create your models.
 
     var User = FM.Model,extend({
         name: 'User',
-        key: 'uid',
         path: 'users',
         data: {
+            'uid': FM.key() 
             'name': FM.string().required(), 
             'email': FM.string().required(),
             'joinedAt': FM.timestamp().autoOnCreate(),
@@ -33,16 +33,16 @@ Then create your models.
     
     var Post = FM.Model.extend({
         name: 'Post',
-        key: 'slug',
         path: 'posts',
         data: {
+            'slug': FM.key()
             'title': FM.string().required(), 
             'content': FM.string('').required(), 
             'createdAt': FM.timestamp().autoOnCreate(), 
             'updatedAt': FM.timestamp().autoOnUpdate(), 
             'publishedAt': FM.timestamp(0),
-            'author': FM.oneToMany('User').inverse('posts'),
-            'isComputed': FM.computed(['publishedAt'], function(publishedAt){
+            'author': FM.oneToMany('User').inverse('posts').required(),
+            'isPublished': FM.computed(['publishedAt'], function(publishedAt){
                  return !!publishedAt;
             })
         }
